@@ -1,6 +1,9 @@
-from django.http import HttpResponse, Http404
+from django.core.files.storage import FileSystemStorage
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
+from .forms import UploadFileForm
 # from django.template import loader
+from . import elron_filter
 
 from .models import Question
 
@@ -21,7 +24,7 @@ def detail(request, question_id):
     # except Question.DoesNotExist:
     #     raise Http404('Question not exist')
 
-    question = get_object_or_404(Question, pk= question_id)
+    question = get_object_or_404(Question, pk=question_id)
     return render(request, 'detail.html', {'question': question})
 
 
@@ -32,3 +35,22 @@ def results(request, question_id):
 
 def vote(request, question_id):
     return HttpResponse("You're voting on question %s" % question_id)
+
+
+def upload_file(request):
+    if request.method == 'POST' and request.FILES['myfile']:
+        myfile = request.FILES['myfile']
+        fs = FileSystemStorage()
+        filename = fs.save(myfile.name, myfile)
+        elron_filter.elron_filter(filename)
+        uploaded_file_url = fs.url(filename)
+        return render(request, 'upload.html', {
+            'uploaded_file_url': uploaded_file_url
+        })
+    return render(request, 'upload.html')
+
+
+def handle_uploaded_file(f):
+    with open('name.txt', 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
