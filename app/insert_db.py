@@ -24,12 +24,12 @@ def insert(filename):
     STOP_TIME = "stop_times.txt"
     STOP = "stops.txt"
 
-    # agency = pd.read_csv(zipInput.open(AGENCY))
-    # for item in agency.fillna('').to_dict('records'):
-    #     agcy = Agency(**item)
-    #     agcy.save()
-    #     sid = transaction.savepoint()
-    # transaction.savepoint_commit(sid)
+    shape = pd.read_csv(zipInput.open(SHAPE))
+    for item in shape.fillna('').to_dict('records'):
+        sp = Shapes(**item)
+        sp.save()
+        sid = transaction.savepoint()
+    transaction.savepoint_commit(sid)
 
     user = settings.DATABASES['default']['USER']
     password = settings.DATABASES['default']['PASSWORD']
@@ -46,27 +46,27 @@ def insert(filename):
     )
 
     engine = create_engine(database_url, echo=False)
-    pd.read_csv(zipInput.open(AGENCY)).fillna('').to_sql(Agency._meta.db_table, con=engine, if_exists='replace',
-                                                         index=False, chunksize=50)
-    pd.read_csv(zipInput.open(FEED_INFO)).fillna('').to_sql(FeedInfo._meta.db_table, con=engine, if_exists='replace',
-                                                            index=False, chunksize=50)
-    pd.read_csv(zipInput.open(FARE_ATT)).fillna('').to_sql(FareRules._meta.db_table, con=engine, if_exists='replace',
-                                                           index=False, chunksize=50)
-    pd.read_csv(zipInput.open(FARE_RULE)).fillna('').to_sql(FareRules._meta.db_table, con=engine, if_exists='replace',
-                                                            index=False, chunksize=50)
-    pd.read_csv(zipInput.open(ROUTE)).fillna('').to_sql(Routes._meta.db_table, con=engine, if_exists='replace',
-                                                        index=False, chunksize=50)
-    pd.read_csv(zipInput.open(TRIP)).fillna('').to_sql(Trips._meta.db_table, con=engine, if_exists='replace',
-                                                       index=False, chunksize=50)
-    pd.read_csv(zipInput.open(CALENDAR)).fillna('').to_sql(Calendar._meta.db_table, con=engine, if_exists='replace',
-                                                           index=False, chunksize=50)
-    pd.read_csv(zipInput.open(CALENDAR_DATE)).fillna('').to_sql(CalendarDates._meta.db_table, con=engine,
-                                                                if_exists='replace', index=False, chunksize=50)
-    pd.read_csv(zipInput.open(SHAPE)).fillna('').to_sql(Shapes._meta.db_table, con=engine, if_exists='replace',
-                                                        index=False, chunksize=50)
-    pd.read_csv(zipInput.open(STOP_TIME)).fillna('').to_sql(StopTimes._meta.db_table, con=engine, if_exists='replace',
-                                                            index=False, chunksize=50)
-    pd.read_csv(zipInput.open(STOP)).fillna('').to_sql(Stops._meta.db_table, con=engine, if_exists='replace',
-                                                       index=False, chunksize=50)
+    # pd.read_csv(zipInput.open(AGENCY)).fillna('').to_sql(Agency._meta.db_table, con=engine, if_exists='replace',
+    #                                                      index=False, chunksize=50)
+    # pd.read_csv(zipInput.open(FEED_INFO)).fillna('').to_sql(FeedInfo._meta.db_table, con=engine, if_exists='replace',
+    #                                                         index=False, chunksize=50)
+    # pd.read_csv(zipInput.open(FARE_ATT)).fillna('').to_sql(FareRules._meta.db_table, con=engine, if_exists='replace',
+    #                                                        index=False, chunksize=50)
+    # pd.read_csv(zipInput.open(FARE_RULE)).fillna('').to_sql(FareRules._meta.db_table, con=engine, if_exists='replace',
+    #                                                         index=False, chunksize=50)
+    # pd.read_csv(zipInput.open(ROUTE)).fillna('').to_sql(Routes._meta.db_table, con=engine, if_exists='replace',
+    #                                                     index=False, chunksize=50)
+    # pd.read_csv(zipInput.open(TRIP)).fillna('').to_sql(Trips._meta.db_table, con=engine, if_exists='replace',
+    #                                                    index=False, chunksize=50)
+    # pd.read_csv(zipInput.open(CALENDAR)).fillna('').to_sql(Calendar._meta.db_table, con=engine, if_exists='replace',
+    #                                                        index=False, chunksize=50)
+    # pd.read_csv(zipInput.open(CALENDAR_DATE)).fillna('').to_sql(CalendarDates._meta.db_table, con=engine,
+    #                                                             if_exists='replace', index=False, chunksize=50)
+    # pd.read_csv(zipInput.open(SHAPE)).fillna('').to_sql(Shapes._meta.db_table, con=engine, if_exists='replace',
+    #                                                     index=False, chunksize=5)
+    # pd.read_csv(zipInput.open(STOP_TIME)).fillna('').to_sql(StopTimes._meta.db_table, con=engine, if_exists='replace',
+    #                                                         index=False, chunksize=50)
+    # pd.read_csv(zipInput.open(STOP)).fillna('').to_sql(Stops._meta.db_table, con=engine, if_exists='replace',
+    #                                                    index=False, chunksize=5)
 
     return
