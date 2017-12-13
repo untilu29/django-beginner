@@ -3,7 +3,7 @@ from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from .forms import UploadFileForm
 # from django.template import loader
-from . import elron_filter
+from . import elron_filter, insert_db
 
 from .models import Question
 
@@ -45,7 +45,7 @@ def upload_file(request):
         elron_filter.elron_filter(filename)
         uploaded_file_url = fs.url(filename)
         return render(request, 'upload.html', {
-            'uploaded_file_url': uploaded_file_url
+            'uploaded_file_url': 'media/estonia.zip'
         })
     return render(request, 'upload.html')
 
@@ -54,3 +54,8 @@ def handle_uploaded_file(f):
     with open('name.txt', 'wb+') as destination:
         for chunk in f.chunks():
             destination.write(chunk)
+
+
+def insert_to_db(request):
+    insert_db.insert('gtfs.zip')
+    return HttpResponse("Done!")

@@ -3,12 +3,14 @@ import zipfile as zf
 import os, glob
 from os.path import basename
 from django.conf import settings
+from elron.models import *
+from sqlalchemy import create_engine
 
 
 def elron_filter(filename):
     # Input file here
     output_folder = settings.MEDIA_ROOT
-    zipInput = zf.ZipFile(output_folder + "/"+ filename, "r")
+    zipInput = zf.ZipFile(output_folder + "/" + filename, "r")
 
     # if not os.path.exists(output_folder):
     #     os.makedirs(output_folder)
@@ -60,6 +62,23 @@ def elron_filter(filename):
         fareRules['route_id'].isin(elron_route.index) & fareRules['origin_id'].isin(elron_stops['zone_id']) & fareRules[
             'destination_id'].isin(elron_stops['zone_id'])]
 
+    user = settings.DATABASES['default']['USER']
+    password = settings.DATABASES['default']['PASSWORD']
+    database_name = settings.DATABASES['default']['NAME']
+    database_host = settings.DATABASES['default']['HOST']
+    database_port = settings.DATABASES['default']['PORT']
+
+    database_url = 'postgresql://{user}:{password}@{database_host}:{database_port}/{database_name}'.format(
+        user=user,
+        password=password,
+        database_name=database_name,
+        database_host=database_host,
+        database_port=database_port
+    )
+
+    engine = create_engine(database_url, echo=False)
+    elron_stops.fillna('').to_sql(Stops._meta.db_table, con=engine, if_exists='replace', index=False)
+
     elron_agency.to_csv(AGENCY, encoding='utf-8')
     elron_feedInfo.to_csv(FEED_INFO, encoding='utf-8', index=False)
     elron_fareAttributes.to_csv(FARE_ATT, encoding='utf-8', index=False)
@@ -72,19 +91,22 @@ def elron_filter(filename):
     elron_stopTimes.to_csv(STOP_TIME, encoding='utf-8', index=False)
     elron_stops.to_csv(STOP, encoding='utf-8', index=False)
 
+
     with zf.ZipFile(output_folder + '/estonia.zip', 'w') as myzip:
         myzip.write(AGENCY, basename(AGENCY))
-        myzip.write(FEED_INFO, basename(FEED_INFO))
-        myzip.write(FARE_ATT, basename(FARE_ATT))
-        myzip.write(FARE_RULE, basename(FARE_RULE))
-        myzip.write(ROUTE, basename(ROUTE))
-        myzip.write(TRIP, basename(TRIP))
-        myzip.write(CALENDAR, basename(CALENDAR))
-        myzip.write(CALENDAR_DATE, basename(CALENDAR_DATE))
-        myzip.write(SHAPE, basename(SHAPE))
-        myzip.write(STOP_TIME, basename(STOP_TIME))
-        myzip.write(STOP, basename(STOP))
+    myzip.write(FEED_INFO, basename(FEED_INFO))
+    myzip.write(FARE_ATT, basename(FARE_ATT))
+    myzip.write(FARE_RULE, basename(FARE_RULE))
+    myzip.write(ROUTE, basename(ROUTE))
+    myzip.write(TRIP, basename(TRIP))
+    myzip.write(CALENDAR, basename(CALENDAR))
+    myzip.write(CALENDAR_DATE, basename(CALENDAR_DATE))
+    myzip.write(SHAPE, basename(SHAPE))
+    myzip.write(STOP_TIME, basename(STOP_TIME))
+    myzip.write(STOP, basename(STOP))
 
     for f in glob.glob(output_folder + "/*.txt"):
         os.remove(f)
+
+
     return
