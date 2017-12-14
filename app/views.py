@@ -4,8 +4,10 @@ from django.shortcuts import render, get_object_or_404
 from .forms import UploadFileForm
 # from django.template import loader
 from . import elron_filter, insert_db
+from django.core import serializers
 
 from .models import Question
+from estonia.models import *
 
 
 def index(request):
@@ -59,3 +61,88 @@ def handle_uploaded_file(f):
 def insert_to_db(request):
     insert_db.insert('gtfs.zip')
     return HttpResponse("Done!")
+
+
+def show_json(request):
+    data = serializers.serialize("json", Agency.objects.all()[10:100])
+    return HttpResponse(data, content_type='application/json')
+
+
+def filter_by_agency(request, agency_name):
+    app_name = 'estonia'
+
+    routes = Routes.objects.raw("SELECT * from {app_name}_routes WHERE agency_id IN "
+                                "(SELECT agency_id from {app_name}_agency WHERE agency_name='{agency}')".format(
+        app_name=app_name,
+        agency=agency_name
+    ))
+
+    trips = Trips.objects.raw("SELECT * from {app_name}_trips WHERE route_id IN "
+                              "(SELECT route_id from {app_name}_routes WHERE agency_id IN "
+                              "(SELECT agency_id from {app_name}_agency WHERE agency_name='{agency}'))".format(
+        app_name=app_name,
+        agency=agency_name
+    ))
+
+    shapes = Shapes.objects.raw("SELECT * from {app_name}_shapes WHERE shape_id IN "
+                                "(SELECT shape_id from {app_name}_trips WHERE route_id IN "
+                                "(SELECT route_id from {app_name}_routes WHERE agency_id IN "
+                                "(SELECT agency_id from {app_name}_agency WHERE agency_name='{agency}')))".format(
+        app_name=app_name,
+        agency=agency_name
+    ))
+
+    calendars = Calendar.objects.raw("SELECT * from {app_name}_calendar WHERE service_id IN "
+                                     "(SELECT service_id from {app_name}_trips WHERE route_id IN "
+                                     "(SELECT route_id from {app_name}_routes WHERE agency_id IN "
+                                     "(SELECT agency_id from {app_name}_agency WHERE agency_name='{agency}')))".format(
+        app_name=app_name,
+        agency=agency_name
+    ))
+
+    stop_times = StopTimes.objects.raw("SELECT 1 as id ,* from {app_name}_stoptimes WHERE trip_id IN "
+                                       "(SELECT trip_id from {app_name}_trips WHERE route_id IN "
+                                       "(SELECT route_id from {app_name}_routes WHERE agency_id IN "
+                                       "(SELECT agency_id from {app_name}_agency WHERE agency_name='{agency}')))".format(
+        app_name=app_name,
+        agency=agency_name
+    ))
+
+    stops = Stops.objects.raw("SELECT * from {app_name}_stops WHERE stop_id IN "
+                              "(SELECT stop_id from {app_name}_stoptimes WHERE trip_id IN "
+                              "(SELECT trip_id from {app_name}_trips WHERE route_id IN "
+                              "(SELECT route_id from {app_name}_routes WHERE agency_id IN "
+                              "(SELECT agency_id from {app_name}_agency WHERE agency_name='{agency}'))))".format(
+        app_name=app_name,
+        agency=agency_name
+    ))
+
+    feed_info = FeedInfo.objects.all()
+
+    fare_attr = FareAttributes.objects.raw("SELECT * from {app_name}_fareattributes WHERE agency_id IN "
+                                           "(SELECT agency_id from {app_name}_agency WHERE agency_name='{agency}')".format(
+        app_name=app_name,
+        agency=agency_name
+    ))
+
+    fare_rules = FareRules.objects.raw("SELECT * from {app_name}_farerules WHERE route_id IN "
+                                       "(SELECT route_id from {app_name}_routes WHERE agency_id IN "
+                                       "(SELECT agency_id from {app_name}_agency WHERE agency_name='{agency}'))"
+                                       "AND origin_id IN (SELECT zone_id from {app_name}_stops WHERE stop_id IN "
+                                       "(SELECT stop_id from {app_name}_stoptimes WHERE trip_id IN "
+                                       "(SELECT trip_id from {app_name}_trips WHERE route_id IN "
+                                       "(SELECT route_id from {app_name}_routes WHERE agency_id IN "
+                                       "(SELECT agency_id from {app_name}_agency WHERE agency_name='{agency}')))))"
+                                       "AND destination_id IN (SELECT zone_id from {app_name}_stops WHERE stop_id IN "
+                                       "(SELECT stop_id from {app_name}_stoptimes WHERE trip_id IN "
+                                       "(SELECT trip_id from {app_name}_trips WHERE route_id IN "
+                                       "(SELECT route_id from {app_name}_routes WHERE agency_id IN "
+                                       "(SELECT agency_id from {app_name}_agency WHERE agency_name='{agency}')))))".format(
+        app_name=app_name,
+        agency=agency_name
+    ))
+
+
+    list_fare = list(fare_rules)
+
+    return HttpResponse(serializers.serialize("json", fare_rules), content_type='application/json')

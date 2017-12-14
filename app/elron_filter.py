@@ -3,7 +3,7 @@ import zipfile as zf
 import os, glob
 from os.path import basename
 from django.conf import settings
-from elron.models import *
+from estonia.models import *
 from sqlalchemy import create_engine
 
 

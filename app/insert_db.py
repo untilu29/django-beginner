@@ -2,7 +2,7 @@ import pandas as pd
 import zipfile as zf
 from django.conf import settings
 from django.db import transaction
-from elron.models import *
+from estonia.models import *
 from sqlalchemy import create_engine
 
 
@@ -24,12 +24,12 @@ def insert(filename):
     STOP_TIME = "stop_times.txt"
     STOP = "stops.txt"
 
-    shape = pd.read_csv(zipInput.open(SHAPE))
-    for item in shape.fillna('').to_dict('records'):
-        sp = Shapes(**item)
-        sp.save()
-        sid = transaction.savepoint()
-    transaction.savepoint_commit(sid)
+    # shape = pd.read_csv(zipInput.open(SHAPE))
+    # for item in shape.fillna('').to_dict('records'):
+    #     sp = Shapes(**item)
+    #     sp.save()
+    #     sid = transaction.savepoint()
+    # transaction.savepoint_commit(sid)
 
     user = settings.DATABASES['default']['USER']
     password = settings.DATABASES['default']['PASSWORD']
@@ -50,8 +50,8 @@ def insert(filename):
     #                                                      index=False, chunksize=50)
     # pd.read_csv(zipInput.open(FEED_INFO)).fillna('').to_sql(FeedInfo._meta.db_table, con=engine, if_exists='replace',
     #                                                         index=False, chunksize=50)
-    # pd.read_csv(zipInput.open(FARE_ATT)).fillna('').to_sql(FareRules._meta.db_table, con=engine, if_exists='replace',
-    #                                                        index=False, chunksize=50)
+    pd.read_csv(zipInput.open(FARE_ATT)).fillna('').to_sql(FareAttributes._meta.db_table, con=engine, if_exists='replace',
+                                                           index=False, chunksize=50)
     # pd.read_csv(zipInput.open(FARE_RULE)).fillna('').to_sql(FareRules._meta.db_table, con=engine, if_exists='replace',
     #                                                         index=False, chunksize=50)
     # pd.read_csv(zipInput.open(ROUTE)).fillna('').to_sql(Routes._meta.db_table, con=engine, if_exists='replace',
