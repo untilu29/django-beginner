@@ -2,106 +2,108 @@ from django.db import models
 
 
 class Agency(models.Model):
-    agency_id = models.CharField(primary_key=True, editable=True, max_length=255)
-    agency_name = models.CharField(max_length=255)
-    agency_url = models.CharField(max_length=512)
-    agency_timezone = models.CharField(max_length=255)
-    agency_phone = models.CharField(max_length=255)
-    agency_lang = models.CharField(max_length=255)
+    agency_id = models.TextField(primary_key=True, editable=True)
+    agency_name = models.TextField(null=True)
+    agency_url = models.TextField(null=True)
+    agency_timezone = models.TextField(null=True)
+    agency_phone = models.TextField(null=True)
+    agency_lang = models.TextField(null=True)
 
     def __str__(self):
         return self.agency_name
 
 
 class Calendar(models.Model):
-    service_id = models.CharField(primary_key=True, editable=True, max_length=255)
-    monday = models.BooleanField()
-    tuesday = models.BooleanField()
-    wednesday = models.BooleanField()
-    thursday = models.BooleanField()
-    friday = models.BooleanField()
-    saturday = models.BooleanField()
-    sunday = models.BooleanField()
-    start_date = models.CharField(max_length=255)
-    end_date = models.CharField(max_length=255)
+    service_id = models.TextField()
+    monday = models.CharField(max_length=1)
+    tuesday = models.CharField(max_length=1)
+    wednesday = models.CharField(max_length=1)
+    thursday = models.CharField(max_length=1)
+    friday = models.CharField(max_length=1)
+    saturday = models.CharField(max_length=1)
+    sunday = models.CharField(max_length=1)
+    start_date = models.TextField()
+    end_date = models.TextField()
 
 
 class CalendarDates(models.Model):
-    service_id = models.CharField(primary_key=True, editable=True, max_length=255)
-    date = models.CharField(max_length=255)
-    exception_type = models.CharField(max_length=255)
+    service_id = models.TextField()
+    date = models.TextField()
+    exception_type = models.TextField(null=True)
 
 
 class FareAttributes(models.Model):
-    fare_id = models.CharField(primary_key=True, editable=True, max_length=255)
-    price = models.CharField(max_length=255)
-    currency_type = models.CharField(max_length=255)
-    payment_method = models.CharField(max_length=255)
-    transfers = models.CharField(max_length=255)
-    agency_id = models.CharField(max_length=255)
+    fare_id = models.TextField()
+    price = models.TextField(null=True)
+    currency_type = models.TextField(null=True)
+    payment_method = models.TextField(null=True)
+    transfers = models.TextField(null=True)
+    agency_id = models.TextField()
 
 
 class FareRules(models.Model):
-    fare_id = models.CharField(primary_key=True, editable=True, max_length=255)
-    route_id = models.CharField(max_length=255)
-    origin_id = models.CharField(max_length=255)
-    destination_id = models.CharField(max_length=255)
+    fare_id = models.TextField()
+    route_id = models.TextField()
+    origin_id = models.TextField()
+    destination_id = models.TextField()
 
 
 class FeedInfo(models.Model):
-    feed_publisher_name = models.CharField(max_length=255)
-    feed_publisher_url = models.CharField(max_length=255)
-    feed_lang = models.CharField(max_length=255)
+    feed_publisher_name = models.TextField()
+    feed_publisher_url = models.TextField()
+    feed_lang = models.TextField()
 
 
 class Routes(models.Model):
-    route_id = models.CharField(primary_key=True, editable=True, max_length=255)
-    agency_id = models.CharField(max_length=255)
-    route_short_name = models.CharField(max_length=255)
-    route_long_name = models.CharField(max_length=255)
-    route_type = models.CharField(max_length=255)
-    route_color = models.CharField(max_length=255)
-    competent_authority = models.CharField(max_length=255)
+    route_id = models.TextField(primary_key=True, editable=True)
+    agency_id = models.TextField()
+    route_short_name = models.TextField(null=True)
+    route_long_name = models.TextField(null=True)
+    route_type = models.TextField(null=True)
+    route_color = models.TextField(null=True)
+    competent_authority = models.TextField(null=True)
 
 
 class Shapes(models.Model):
-    shape_id = models.CharField(primary_key=True, editable=True, max_length=255)
+    shape_id = models.TextField()
     shape_pt_lat = models.FloatField()
     shape_pt_lon = models.FloatField()
-    shape_pt_sequence = models.CharField(max_length=255)
+    shape_pt_sequence = models.TextField()
 
 
 class StopTimes(models.Model):
-    trip_id = models.CharField(max_length=255)
-    arrival_time = models.CharField(max_length=255)
-    departure_time = models.CharField(max_length=255)
-    stop_id = models.CharField(max_length=255)
-    stop_sequence = models.CharField(max_length=255)
-    pickup_type = models.CharField(max_length=255)
-    drop_off_type = models.CharField(max_length=255)
+    trip_id = models.TextField()
+    arrival_time = models.TextField(null=True)
+    departure_time = models.TextField(null=True)
+    stop_id = models.TextField()
+    stop_sequence = models.TextField()
+    pickup_type = models.TextField(null=True)
+    drop_off_type = models.TextField(null=True)
 
 
 class Stops(models.Model):
-    stop_id = models.CharField(primary_key=True, editable=True, max_length=255)
-    stop_code = models.CharField(max_length=255)
-    stop_name = models.CharField(max_length=255)
+    stop_id = models.TextField(primary_key=True, editable=True)
+    stop_code = models.TextField(null=True)
+    stop_name = models.TextField(null=True)
     stop_lat = models.FloatField()
     stop_lon = models.FloatField()
-    zone_id = models.CharField(max_length=255)
-    alias = models.CharField(max_length=255)
-    stop_area = models.CharField(max_length=255)
-    stop_desc = models.CharField(max_length=255)
-    zone_name = models.CharField(max_length=255)
-    location_type = models.CharField(max_length=255)
-    parent_station = models.CharField(max_length=255)
+    zone_id = models.TextField()
+    alias = models.TextField(null=True)
+    stop_area = models.TextField(null=True)
+    stop_desc = models.TextField(null=True)
+    lest_x = models.FloatField()
+    lest_y = models.FloatField()
+    zone_name = models.TextField(null=True)
+    location_type = models.TextField(null=True)
+    parent_station = models.TextField(null=True)
 
 
 class Trips(models.Model):
-    route_id = models.CharField(primary_key=True, editable=True, max_length=255)
-    service_id = models.CharField(max_length=255)
-    trip_id = models.CharField(max_length=255)
-    trip_headsign = models.CharField(max_length=255)
-    trip_long_name = models.CharField(max_length=255)
-    direction_code = models.CharField(max_length=255)
-    shape_id = models.CharField(max_length=255)
-    wheelchair_accessible = models.CharField(max_length=255)
+    route_id = models.TextField()
+    service_id = models.TextField()
+    trip_id = models.TextField()
+    trip_headsign = models.TextField(null=True)
+    trip_long_name = models.TextField(null=True)
+    direction_code = models.TextField(null=True)
+    shape_id = models.TextField(null=True)
+    wheelchair_accessible = models.TextField(null=True)

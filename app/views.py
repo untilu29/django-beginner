@@ -3,7 +3,8 @@ from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from .forms import UploadFileForm
 # from django.template import loader
-from . import elron_filter, insert_db
+from . import elron_filter
+from estonia import insert_db
 from django.core import serializers
 
 from .models import Question

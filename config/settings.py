@@ -100,8 +100,8 @@ DATABASES = {
         'NAME': 'gtfs_test',
         'USER': 'postgres',
         'PASSWORD': '123456',
-        'HOST': '192.168.80.19',
-        'PORT': '5434',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 

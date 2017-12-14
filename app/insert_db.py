@@ -2,11 +2,19 @@ import pandas as pd
 import zipfile as zf
 from django.conf import settings
 from django.db import transaction
-from estonia.models import *
+from .models import *
 from sqlalchemy import create_engine
+from django.db import connection
 
 
-@transaction.atomic
+# import the logging library
+import logging
+import time
+
+# Get an instance of a logger
+logger = logging.getLogger("Time calculate")
+
+# @transaction.atomic
 def insert(filename):
     # Input file here
     output_folder = settings.MEDIA_ROOT
@@ -31,6 +39,8 @@ def insert(filename):
     #     sid = transaction.savepoint()
     # transaction.savepoint_commit(sid)
 
+
+
     user = settings.DATABASES['default']['USER']
     password = settings.DATABASES['default']['PASSWORD']
     database_name = settings.DATABASES['default']['NAME']
@@ -44,14 +54,20 @@ def insert(filename):
         database_host=database_host,
         database_port=database_port
     )
+    start_time = time.time()
+    logger.info('Begin INSERT ')
+    # engine = create_engine(database_url, echo=False)
 
-    engine = create_engine(database_url, echo=False)
+
+    with connection.cursor() as cursor:
+        cursor.copy_from(zipInput.open(SHAPE),Shapes.__, sep=',')
+
     # pd.read_csv(zipInput.open(AGENCY)).fillna('').to_sql(Agency._meta.db_table, con=engine, if_exists='replace',
     #                                                      index=False, chunksize=50)
     # pd.read_csv(zipInput.open(FEED_INFO)).fillna('').to_sql(FeedInfo._meta.db_table, con=engine, if_exists='replace',
     #                                                         index=False, chunksize=50)
-    pd.read_csv(zipInput.open(FARE_ATT)).fillna('').to_sql(FareAttributes._meta.db_table, con=engine, if_exists='replace',
-                                                           index=False, chunksize=50)
+    # pd.read_csv(zipInput.open(FARE_ATT)).fillna('').to_sql(FareAttributes._meta.db_table, con=engine, if_exists='replace',
+    #                                                       index=False, chunksize=50)
     # pd.read_csv(zipInput.open(FARE_RULE)).fillna('').to_sql(FareRules._meta.db_table, con=engine, if_exists='replace',
     #                                                         index=False, chunksize=50)
     # pd.read_csv(zipInput.open(ROUTE)).fillna('').to_sql(Routes._meta.db_table, con=engine, if_exists='replace',
@@ -62,11 +78,12 @@ def insert(filename):
     #                                                        index=False, chunksize=50)
     # pd.read_csv(zipInput.open(CALENDAR_DATE)).fillna('').to_sql(CalendarDates._meta.db_table, con=engine,
     #                                                             if_exists='replace', index=False, chunksize=50)
-    # pd.read_csv(zipInput.open(SHAPE)).fillna('').to_sql(Shapes._meta.db_table, con=engine, if_exists='replace',
-    #                                                     index=False, chunksize=5)
+    # pd.read_csv(zipInput.open(SHAPE)).fillna('').to_sql(Shapes._meta.db_table, con=engine, if_exists='replace', index=False, chunksize=5)
     # pd.read_csv(zipInput.open(STOP_TIME)).fillna('').to_sql(StopTimes._meta.db_table, con=engine, if_exists='replace',
     #                                                         index=False, chunksize=50)
     # pd.read_csv(zipInput.open(STOP)).fillna('').to_sql(Stops._meta.db_table, con=engine, if_exists='replace',
     #                                                    index=False, chunksize=5)
+    elapsed_time = time.time() - start_time
+    logger.info('Finish INSERT in ')
 
     return
